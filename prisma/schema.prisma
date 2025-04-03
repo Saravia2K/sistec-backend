@@ -12,3 +12,141 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model ComponentType {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  components  Component[]
+}
+
+model Customer {
+  id               Int             @id @default(autoincrement())
+  name             String
+  phone            String
+  email            String?         @unique
+  address          String?
+  registrationDate DateTime        @default(now())
+  supportTickets   SupportTicket[]
+}
+
+model Technician {
+  id              Int                 @id @default(autoincrement())
+  name            String
+  specialty       TechnicianSpecialty
+  phone           String
+  email           String?             @unique
+  active          Boolean             @default(true)
+  assignedTickets SupportTicket[]     @relation("AssignedTechnician")
+}
+
+model Supplier {
+  id          Int        @id @default(autoincrement())
+  name        String
+  phone       String
+  mainContact String?
+  email       String?
+  address     String?
+  rating      Float?
+  purchases   Purchase[]
+}
+
+model Component {
+  id           Int             @id @default(autoincrement())
+  typeId       Int
+  type         ComponentType   @relation(fields: [typeId], references: [id])
+  name         String
+  brand        String?
+  stock        Int             @default(0)
+  minimumStock Int             @default(5)
+  unitPrice    Float?
+  purchases    Purchase[]
+  usedIn       UsedComponent[]
+}
+
+model SupportTicket {
+  id                   Int            @id @default(autoincrement())
+  customerId           Int
+  customer             Customer       @relation(fields: [customerId], references: [id])
+  assignedTechnicianId Int?
+  assignedTechnician   Technician?    @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
+  deviceType           DeviceType
+  brand                String
+  problemDescription   String
+  status               TicketStatus   @default(pending)
+  priority             TicketPriority @default(medium)
+  model                String?
+  serialNumber         String?
+  requestDate          DateTime       @default(now())
+  closeDate            DateTime?
+  repairs              Repair[]
+}
+
+model Repair {
+  id              Int             @id @default(autoincrement())
+  supportTicketId Int
+  supportTicket   SupportTicket   @relation(fields: [supportTicketId], references: [id])
+  diagnosis       String
+  startDate       DateTime
+  appliedSolution String?
+  endDate         DateTime?
+  estimatedCost   Float?
+  usedComponents  UsedComponent[]
+}
+
+model Purchase {
+  id           Int            @id @default(autoincrement())
+  supplierId   Int
+  supplier     Supplier       @relation(fields: [supplierId], references: [id])
+  componentId  Int
+  component    Component      @relation(fields: [componentId], references: [id])
+  quantity     Int
+  unitPrice    Float
+  purchaseDate DateTime
+  deliveryDate DateTime?
+  details      String?
+  status       PurchaseStatus @default(pending)
+}
+
+model UsedComponent {
+  id          Int       @id @default(autoincrement())
+  repairId    Int
+  repair      Repair    @relation(fields: [repairId], references: [id])
+  componentId Int
+  component   Component @relation(fields: [componentId], references: [id])
+  quantity    Int       @default(1)
+}
+
+enum TechnicianSpecialty {
+  hardware
+  software
+  general
+}
+
+enum DeviceType {
+  laptop
+  cellphone
+  tablet
+  desktop
+  other
+}
+
+enum TicketStatus {
+  pending
+  in_progress
+  completed
+  canceled
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+}
+
+enum PurchaseStatus {
+  pending
+  completed
+  canceled
+  returned
+}
