@@ -17,7 +17,7 @@ model User {
   id         Int          @id @default(autoincrement())
   name       String       @db.VarChar(100)
   phone      String       @db.VarChar(20)
-  email      String       @db.VarChar(100)
+  email      String       @unique @db.VarChar(100)
   password   String
   firstLogin Boolean      @default(true)
   Customer   Customer[]
@@ -43,14 +43,12 @@ model Technician {
 }
 
 model Supplier {
-  id          Int        @id @default(autoincrement())
-  name        String
-  phone       String
-  mainContact String?
-  email       String?
-  address     String?
-  rating      Float?
-  purchases   Purchase[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  phone     String     @unique
+  email     String?    @unique
+  address   String?
+  purchases Purchase[]
 }
 
 model Component {
