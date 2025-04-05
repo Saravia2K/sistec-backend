@@ -52,23 +52,22 @@ model Supplier {
 }
 
 model Component {
+  id            Int              @id @default(autoincrement())
+  name          String           @unique
+  description   String?
+  components    ComponentStock[]
+  Purchase      Purchase[]
+  UsedComponent UsedComponent[]
+}
+
+model ComponentStock {
   id           Int             @id @default(autoincrement())
-  typeId       Int
-  type         ComponentType   @relation(fields: [typeId], references: [id])
-  name         String
-  brand        String?
+  componentId  Int
+  component    Component       @relation(fields: [componentId], references: [id])
   stock        Int             @default(0)
   minimumStock Int             @default(5)
   unitPrice    Float?
-  purchases    Purchase[]
   usedIn       UsedComponent[]
-}
-
-model ComponentType {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique
-  description String?
-  components  Component[]
 }
 
 model SupportTicket {
@@ -116,12 +115,14 @@ model Purchase {
 }
 
 model UsedComponent {
-  id          Int       @id @default(autoincrement())
-  repairId    Int
-  repair      Repair    @relation(fields: [repairId], references: [id])
-  componentId Int
-  component   Component @relation(fields: [componentId], references: [id])
-  quantity    Int       @default(1)
+  id               Int             @id @default(autoincrement())
+  repairId         Int
+  repair           Repair          @relation(fields: [repairId], references: [id])
+  componentId      Int
+  component        Component       @relation(fields: [componentId], references: [id])
+  quantity         Int             @default(1)
+  componentStockId Int?
+  ComponentStock   ComponentStock? @relation(fields: [componentStockId], references: [id])
 }
 
 enum TechnicianSpecialty {
