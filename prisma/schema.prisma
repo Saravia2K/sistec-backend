@@ -13,18 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ComponentType {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique
-  description String?
-  components  Component[]
+model User {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(100)
+  phone      String       @db.VarChar(20)
+  email      String       @db.VarChar(100)
+  password   String
+  firstLogin Boolean      @default(true)
+  Customer   Customer[]
+  Technician Technician[]
 }
 
 model Customer {
   id               Int             @id @default(autoincrement())
-  name             String
-  phone            String
-  email            String?         @unique
+  userId           Int
+  user             User            @relation(fields: [userId], references: [id])
   address          String?
   registrationDate DateTime        @default(now())
   supportTickets   SupportTicket[]
@@ -32,10 +35,9 @@ model Customer {
 
 model Technician {
   id              Int                 @id @default(autoincrement())
-  name            String
+  userId          Int
+  user            User                @relation(fields: [userId], references: [id])
   specialty       TechnicianSpecialty
-  phone           String
-  email           String?             @unique
   active          Boolean             @default(true)
   assignedTickets SupportTicket[]     @relation("AssignedTechnician")
 }
@@ -62,6 +64,13 @@ model Component {
   unitPrice    Float?
   purchases    Purchase[]
   usedIn       UsedComponent[]
+}
+
+model ComponentType {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  components  Component[]
 }
 
 model SupportTicket {
