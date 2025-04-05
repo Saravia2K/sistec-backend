@@ -27,7 +27,7 @@ model User {
 model Customer {
   id               Int             @id @default(autoincrement())
   userId           Int
-  user             User            @relation(fields: [userId], references: [id])
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   address          String?
   registrationDate DateTime        @default(now())
   supportTickets   SupportTicket[]
@@ -36,7 +36,7 @@ model Customer {
 model Technician {
   id              Int                 @id @default(autoincrement())
   userId          Int
-  user            User                @relation(fields: [userId], references: [id])
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   specialty       TechnicianSpecialty
   active          Boolean             @default(true)
   assignedTickets SupportTicket[]     @relation("AssignedTechnician")
