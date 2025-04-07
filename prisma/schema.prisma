@@ -55,6 +55,7 @@ model Component {
   id            Int              @id @default(autoincrement())
   name          String           @unique
   description   String?
+  visible       Boolean          @default(true)
   components    ComponentStock[]
   Purchase      Purchase[]
   UsedComponent UsedComponent[]
@@ -70,20 +71,27 @@ model ComponentStock {
   usedIn       UsedComponent[]
 }
 
+model SupportedDevices {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  SupportTicket SupportTicket[]
+}
+
 model SupportTicket {
-  id                   Int            @id @default(autoincrement())
+  id                   Int              @id @default(autoincrement())
   customerId           Int
-  customer             Customer       @relation(fields: [customerId], references: [id])
+  customer             Customer         @relation(fields: [customerId], references: [id])
   assignedTechnicianId Int?
-  assignedTechnician   Technician?    @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
-  deviceType           DeviceType
+  assignedTechnician   Technician?      @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
+  supportedDevicesId   Int
+  supportedDevices     SupportedDevices @relation(fields: [supportedDevicesId], references: [id])
   brand                String
   problemDescription   String
-  status               TicketStatus   @default(pending)
-  priority             TicketPriority @default(medium)
+  status               TicketStatus     @default(pending)
+  priority             TicketPriority   @default(medium)
   model                String?
   serialNumber         String?
-  requestDate          DateTime       @default(now())
+  requestDate          DateTime         @default(now())
   closeDate            DateTime?
   repairs              Repair[]
 }
@@ -129,14 +137,6 @@ enum TechnicianSpecialty {
   hardware
   software
   general
-}
-
-enum DeviceType {
-  laptop
-  cellphone
-  tablet
-  desktop
-  other
 }
 
 enum TicketStatus {
