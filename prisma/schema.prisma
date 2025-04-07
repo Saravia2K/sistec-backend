@@ -43,28 +43,31 @@ model Technician {
 }
 
 model Supplier {
-  id        Int        @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   name      String
-  phone     String     @unique
-  email     String?    @unique
+  phone     String           @unique
+  email     String?          @unique
   address   String?
   purchases Purchase[]
+  stocks    ComponentStock[]
 }
 
 model Component {
-  id            Int              @id @default(autoincrement())
-  name          String           @unique
-  description   String?
-  visible       Boolean          @default(true)
-  components    ComponentStock[]
-  Purchase      Purchase[]
-  UsedComponent UsedComponent[]
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  visible     Boolean          @default(true)
+  components  ComponentStock[]
+  purchases   Purchase[]
+  usedIn      UsedComponent[]
 }
 
 model ComponentStock {
   id           Int             @id @default(autoincrement())
   componentId  Int
   component    Component       @relation(fields: [componentId], references: [id])
+  supplierId   Int
+  supplier     Supplier        @relation(fields: [supplierId], references: [id])
   stock        Int             @default(0)
   minimumStock Int             @default(5)
   unitPrice    Float
