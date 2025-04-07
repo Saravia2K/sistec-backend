@@ -67,7 +67,8 @@ model ComponentStock {
   component    Component       @relation(fields: [componentId], references: [id])
   stock        Int             @default(0)
   minimumStock Int             @default(5)
-  unitPrice    Float?
+  unitPrice    Float
+  inUse        Boolean
   usedIn       UsedComponent[]
 }
 
