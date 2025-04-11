@@ -87,8 +87,8 @@ model SupportTicket {
   customer             Customer         @relation(fields: [customerId], references: [id])
   assignedTechnicianId Int?
   assignedTechnician   Technician?      @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
-  supportedDevicesId   Int
-  supportedDevices     SupportedDevices @relation(fields: [supportedDevicesId], references: [id])
+  deviceTypeId         Int
+  deviceType           SupportedDevices @relation(fields: [deviceTypeId], references: [id])
   brand                String
   problemDescription   String
   status               TicketStatus     @default(pending)
