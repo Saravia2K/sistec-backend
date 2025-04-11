@@ -92,7 +92,7 @@ model SupportTicket {
   brand                String
   problemDescription   String
   status               TicketStatus     @default(pending)
-  priority             TicketPriority   @default(medium)
+  priority             TicketPriority?
   model                String?
   serialNumber         String?
   requestDate          DateTime         @default(now())
