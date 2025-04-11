@@ -76,9 +76,9 @@ model ComponentStock {
 }
 
 model SupportedDevices {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  SupportTicket SupportTicket[]
+  id      Int             @id @default(autoincrement())
+  name    String          @unique
+  tickets SupportTicket[]
 }
 
 model SupportTicket {
