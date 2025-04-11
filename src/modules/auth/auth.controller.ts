@@ -1,12 +1,16 @@
-import { Controller, Post } from "@nestjs/common";
-import { PrismaService } from "src/providers/prisma/prisma.service";
+import { Controller, Post, Body } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly prismaService : PrismaService){}
+  constructor(private readonly authService: AuthService) {}
 
-    @Post('login')
-    login (){
-        
-    }
+  @Post('login')
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  login(@Body() body: LoginAuthDto) {
+    return this.authService.login(body);
+  }
 }
