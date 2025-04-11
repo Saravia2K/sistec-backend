@@ -2,10 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async login({ email, password }: LoginAuthDto) {
     const user = await this.prisma.user.findUnique({
@@ -23,12 +27,17 @@ export class AuthService {
 
     const { password: _, ...userData } = user;
 
+    const payload = {
+      sub: user.id,
+      role: user.Customer.length ? 'customer' : user.Technician.length ? 'technician' : 'none',
+    };
+
+    const token = this.jwtService.sign(payload);
+
     return {
       message: 'Login exitoso',
+      token,
       user: userData,
-      role: user.Customer.length ? 'customer' : user.Technician.length ? 'technician' : 'none',
-      customer: user.Customer[0] ?? null,
-      technician: user.Technician[0] ?? null,
     };
   }
 }

@@ -1,52 +1,110 @@
-import { Controller, Get } from '@nestjs/common';
-import { DashboardService } from './dashboard.service';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { DashboardAdminService } from './admin/dashboard.admin.service';
+import { DashboardClientService } from './client/dashboard.client.service';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('Dashboard')
 @Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(
+    private readonly adminService: DashboardAdminService,
+    private readonly clientService: DashboardClientService,
+  ) {}
 
+  // admin
   @Get('admin')
-  @ApiOperation({ summary: 'Dashboard resumen completo' })
-  getAdminStats() {
-    return this.dashboardService.getAdminStats();
+  @ApiOperation({ summary: 'Dashboard general de administrador' })
+  getAdminDashboard() {
+    return this.adminService.getAdminStats();
   }
 
-  @Get('total-tickets')
-  @ApiOperation({ summary: 'Total de solicitudes' })
+  @Get('admin/total')
+  @ApiOperation({ summary: 'Total de tickets' })
   getTotalTickets() {
-    return this.dashboardService.totalTickets();
+    return this.adminService.totalTickets();
   }
 
-  @Get('status-counts')
-  @ApiOperation({ summary: 'Solicitudes por estado' })
+  @Get('admin/status')
+  @ApiOperation({ summary: 'Tickets por estado' })
   getStatusCounts() {
-    return this.dashboardService.statusCounts();
+    return this.adminService.statusCounts();
   }
 
-  @Get('low-stock')
-  @ApiOperation({ summary: 'Piezas con stock bajo' })
+  @Get('admin/low-stock')
+  @ApiOperation({ summary: 'Componentes con stock bajo' })
   getLowStock() {
-    return this.dashboardService.lowStockComponents();
+    return this.adminService.lowStockComponents();
   }
 
-  @Get('common-failures')
+  @Get('admin/failures')
   @ApiOperation({ summary: 'Fallas más comunes' })
   getCommonFailures() {
-    return this.dashboardService.commonFailures();
+    return this.adminService.commonFailures();
   }
 
-  @Get('avg-repair-times')
-  @ApiOperation({ summary: 'Tiempo promedio de reparación' })
-  getAvgRepairTimes() {
-    return this.dashboardService.avgRepairTimes();
+  @Get('admin/avg-times')
+  @ApiOperation({ summary: 'Tiempos promedio de reparación' })
+  getAverageTimes() {
+    return this.adminService.getAverageRepairTimes();
   }
 
-  @Get('high-priority')
+  @Get('admin/high-priority')
   @ApiOperation({ summary: 'Tickets con prioridad alta' })
-  getHighPriority() {
-    return this.dashboardService.highPriorityTickets();
+  getHighPriorityTickets() {
+    return this.adminService.highPriorityTickets();
   }
-}
 
+  // client
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('client')
+  @ApiOperation({ summary: 'Dashboard completo del cliente autenticado' })
+  getClientDashboard(@Request() req) {
+    return this.clientService.getClientStats(req.user.id);
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('client/total')
+  @ApiOperation({ summary: 'Total de solicitudes del cliente' })
+  async getClientTotal(@Request() req) {
+    const id = await this.clientService.getCustomerId(req.user.id);
+    if (!id) return { message: 'Cliente no encontrado' };
+    return this.clientService.getTotalTickets(id);
+  }
+  
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('client/status')
+  @ApiOperation({ summary: 'Solicitudes por estado del cliente' })
+  async getClientStatus(@Request() req) {
+    const id = await this.clientService.getCustomerId(req.user.id);
+    if (!id) return { message: 'Cliente no encontrado' };
+  
+    const [pending, inProgress, completed] = await Promise.all([
+      this.clientService.getStatusCount(id, 'pending'),
+      this.clientService.getStatusCount(id, 'in_progress'),
+      this.clientService.getStatusCount(id, 'completed'),
+    ]);
+  
+    return {
+      pending,
+      inProgress,
+      completed,
+    };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('client/recent')
+  @ApiOperation({ summary: 'Últimas 3 solicitudes del cliente' })
+  async getClientRecent(@Request() req) {
+    const id = await this.clientService.getCustomerId(req.user.id);
+    if (!id) return { message: 'Cliente no encontrado' };
+    return this.clientService.getRecentRequests(id);
+  }
+  
+  
+}
