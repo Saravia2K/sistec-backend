@@ -59,7 +59,6 @@ model Component {
   visible     Boolean          @default(true)
   components  ComponentStock[]
   purchases   Purchase[]
-  usedIn      UsedComponent[]
 }
 
 model ComponentStock {
@@ -127,14 +126,12 @@ model Purchase {
 }
 
 model UsedComponent {
-  id               Int             @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   repairId         Int
-  repair           Repair          @relation(fields: [repairId], references: [id])
-  componentId      Int
-  component        Component       @relation(fields: [componentId], references: [id])
-  quantity         Int             @default(1)
-  componentStockId Int?
-  ComponentStock   ComponentStock? @relation(fields: [componentStockId], references: [id])
+  repair           Repair         @relation(fields: [repairId], references: [id])
+  quantity         Int            @default(1)
+  componentStockId Int
+  ComponentStock   ComponentStock @relation(fields: [componentStockId], references: [id])
 }
 
 enum TechnicianSpecialty {
