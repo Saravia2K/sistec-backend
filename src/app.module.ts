@@ -7,6 +7,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { TechniciansModule } from './modules/technicians/technicians.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { ClientsModule } from './modules/clients/clients.module';
     AuthModule,
     UsersModule,
     ClientsModule,
+    TechniciansModule,
     
   ],
   controllers: [AppController],
