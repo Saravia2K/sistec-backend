@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { DashboardAdminService } from './admin/dashboard.admin.service';
 import { DashboardClientService } from './client/dashboard.client.service';
+import { DashboardTechnicianService } from './technician/dashboard.technician.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('Dashboard')
@@ -10,6 +11,7 @@ export class DashboardController {
   constructor(
     private readonly adminService: DashboardAdminService,
     private readonly clientService: DashboardClientService,
+    private readonly technicianService: DashboardTechnicianService,
   ) {}
 
   // admin
@@ -106,5 +108,15 @@ export class DashboardController {
     return this.clientService.getRecentRequests(id);
   }
   
+  // technician
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('technician')
+  @ApiOperation({ summary: 'Dashboard del técnico autenticado' })
+  getTechnicianStats(@Request() req) {
+  return this.technicianService.getTechnicianStats(req.user.id);
+}
+
   
 }
