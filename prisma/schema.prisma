@@ -14,19 +14,19 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar(100)
-  phone      String       @db.VarChar(20)
-  email      String       @unique @db.VarChar(100)
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(100)
+  phone      String      @db.VarChar(20)
+  email      String      @unique @db.VarChar(100)
   password   String
-  firstLogin Boolean      @default(true)
-  Customer   Customer[]
-  Technician Technician[]
+  firstLogin Boolean     @default(true)
+  customer   Customer?
+  technician Technician?
 }
 
 model Customer {
   id               Int             @id @default(autoincrement())
-  userId           Int
+  userId           Int             @unique
   user             User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   address          String?
   registrationDate DateTime        @default(now())
@@ -35,7 +35,7 @@ model Customer {
 
 model Technician {
   id              Int                 @id @default(autoincrement())
-  userId          Int
+  userId          Int                 @unique
   user            User                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   specialty       TechnicianSpecialty
   active          Boolean             @default(true)
@@ -59,7 +59,6 @@ model Component {
   visible     Boolean          @default(true)
   components  ComponentStock[]
   purchases   Purchase[]
-  usedIn      UsedComponent[]
 }
 
 model ComponentStock {
@@ -76,9 +75,9 @@ model ComponentStock {
 }
 
 model SupportedDevices {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  SupportTicket SupportTicket[]
+  id      Int             @id @default(autoincrement())
+  name    String          @unique
+  tickets SupportTicket[]
 }
 
 model SupportTicket {
@@ -87,22 +86,22 @@ model SupportTicket {
   customer             Customer         @relation(fields: [customerId], references: [id])
   assignedTechnicianId Int?
   assignedTechnician   Technician?      @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
-  supportedDevicesId   Int
-  supportedDevices     SupportedDevices @relation(fields: [supportedDevicesId], references: [id])
+  deviceTypeId         Int
+  deviceType           SupportedDevices @relation(fields: [deviceTypeId], references: [id])
   brand                String
   problemDescription   String
   status               TicketStatus     @default(pending)
-  priority             TicketPriority   @default(medium)
+  priority             TicketPriority?
   model                String?
   serialNumber         String?
   requestDate          DateTime         @default(now())
   closeDate            DateTime?
-  repairs              Repair[]
+  repair               Repair?
 }
 
 model Repair {
   id              Int             @id @default(autoincrement())
-  supportTicketId Int
+  supportTicketId Int             @unique
   supportTicket   SupportTicket   @relation(fields: [supportTicketId], references: [id])
   diagnosis       String
   startDate       DateTime
@@ -127,14 +126,12 @@ model Purchase {
 }
 
 model UsedComponent {
-  id               Int             @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   repairId         Int
-  repair           Repair          @relation(fields: [repairId], references: [id])
-  componentId      Int
-  component        Component       @relation(fields: [componentId], references: [id])
-  quantity         Int             @default(1)
-  componentStockId Int?
-  ComponentStock   ComponentStock? @relation(fields: [componentStockId], references: [id])
+  repair           Repair         @relation(fields: [repairId], references: [id])
+  quantity         Int            @default(1)
+  componentStockId Int
+  ComponentStock   ComponentStock @relation(fields: [componentStockId], references: [id])
 }
 
 enum TechnicianSpecialty {
