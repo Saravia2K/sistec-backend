@@ -14,9 +14,7 @@ export class ComponentService {
   }
 
   async findAll() {
-    return this.prisma.component.findMany({
-      where: { visible: true }, // Filtra componentes visibles
-    });
+    return this.prisma.component.findMany();
   }
 
   async findOne(id: number) {

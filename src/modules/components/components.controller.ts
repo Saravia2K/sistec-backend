@@ -4,8 +4,8 @@ import {
   Post,
   Body,
   Param,
-  Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
@@ -63,7 +63,7 @@ export class ComponentController {
     return this.componentService.findOne(+id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un componente' })
   @ApiParam({ name: 'id', description: 'ID del componente', example: 1 })
   @ApiResponse({
