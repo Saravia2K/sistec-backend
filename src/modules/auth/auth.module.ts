@@ -3,12 +3,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from 'src/strategies/jwt.strategy';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'supersecreto', 
+      secret: 'supersecreto',
       signOptions: { expiresIn: '7d' },
     }),
   ],

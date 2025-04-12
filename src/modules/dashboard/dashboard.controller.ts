@@ -1,11 +1,16 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { DashboardAdminService } from './admin/dashboard.admin.service';
 import { DashboardClientService } from './client/dashboard.client.service';
 import { DashboardTechnicianService } from './technician/dashboard.technician.service';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+
+import { User } from 'src/decorators/user.decorator';
+import { TUser } from 'src/lib/types';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 @ApiTags('Dashboard')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('dashboard')
 export class DashboardController {
   constructor(
@@ -14,7 +19,7 @@ export class DashboardController {
     private readonly technicianService: DashboardTechnicianService,
   ) {}
 
-  // admin
+  //#region Admin
   @Get('admin')
   @ApiOperation({ summary: 'Dashboard general de administrador' })
   getAdminDashboard() {
@@ -56,67 +61,56 @@ export class DashboardController {
   getHighPriorityTickets() {
     return this.adminService.highPriorityTickets();
   }
+  //#endregion
 
-  // client
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  //#region Clients
   @Get('client')
   @ApiOperation({ summary: 'Dashboard completo del cliente autenticado' })
-  getClientDashboard(@Request() req) {
-    return this.clientService.getClientStats(req.user.id);
+  getClientDashboard(@User() user: TUser) {
+    return this.clientService.getClientStats(user.id);
   }
-  
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+
   @Get('client/total')
   @ApiOperation({ summary: 'Total de solicitudes del cliente' })
-  async getClientTotal(@Request() req) {
-    const id = await this.clientService.getCustomerId(req.user.id);
+  async getClientTotal(@User() user: TUser) {
+    const id = await this.clientService.getCustomerId(user.id);
     if (!id) return { message: 'Cliente no encontrado' };
     return this.clientService.getTotalTickets(id);
   }
-  
-  
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+
   @Get('client/status')
   @ApiOperation({ summary: 'Solicitudes por estado del cliente' })
-  async getClientStatus(@Request() req) {
-    const id = await this.clientService.getCustomerId(req.user.id);
+  async getClientStatus(@User() user: TUser) {
+    const id = await this.clientService.getCustomerId(user.id);
     if (!id) return { message: 'Cliente no encontrado' };
-  
+
     const [pending, inProgress, completed] = await Promise.all([
       this.clientService.getStatusCount(id, 'pending'),
       this.clientService.getStatusCount(id, 'in_progress'),
       this.clientService.getStatusCount(id, 'completed'),
     ]);
-  
+
     return {
       pending,
       inProgress,
       completed,
     };
   }
-  
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+
   @Get('client/recent')
   @ApiOperation({ summary: 'Últimas 3 solicitudes del cliente' })
-  async getClientRecent(@Request() req) {
-    const id = await this.clientService.getCustomerId(req.user.id);
+  async getClientRecent(@User() user: TUser) {
+    const id = await this.clientService.getCustomerId(user.id);
     if (!id) return { message: 'Cliente no encontrado' };
     return this.clientService.getRecentRequests(id);
   }
-  
-  // technician
-  
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  //#endregion
+
+  //#region Technicians
   @Get('technician')
   @ApiOperation({ summary: 'Dashboard del técnico autenticado' })
-  getTechnicianStats(@Request() req) {
-  return this.technicianService.getTechnicianStats(req.user.id);
-}
-
-  
+  getTechnicianStats(@User() user: TUser) {
+    return this.technicianService.getTechnicianStats(user.id);
+  }
+  //#endregion
 }

@@ -7,7 +7,6 @@ export class DashboardClientService {
   constructor(private prisma: PrismaService) {}
 
   public async getCustomerId(userId: number): Promise<number | null> {
-
     const customer = await this.prisma.customer.findFirst({
       where: { userId },
       select: { id: true },
@@ -58,7 +57,7 @@ export class DashboardClientService {
         id: true,
         requestDate: true,
         status: true,
-        supportedDevices: { select: { name: true } },
+        deviceType: { select: { name: true } },
         assignedTechnician: {
           select: {
             user: {
@@ -71,7 +70,7 @@ export class DashboardClientService {
 
     return tickets.map((t) => ({
       id: t.id,
-      deviceType: t.supportedDevices.name,
+      deviceType: t.deviceType.name,
       requestDate: t.requestDate,
       assignedAgent: t.assignedTechnician?.user?.name ?? 'Sin asignar',
       status: t.status,
