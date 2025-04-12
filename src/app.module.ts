@@ -8,9 +8,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { TechniciansModule } from './modules/technicians/technicians.module';
-import { ClientsService } from './modules/clients/clients.service';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
-
+import { TicketsModule } from './modules/tickets/tickets.module';
 
 @Module({
   imports: [
@@ -23,7 +22,7 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
     ClientsModule,
     TechniciansModule,
     SuppliersModule,
-    
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
