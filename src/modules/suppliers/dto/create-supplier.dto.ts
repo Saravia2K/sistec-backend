@@ -15,10 +15,6 @@ export class CreateSupplierDto {
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  password: string;
-
-  @ApiProperty()
   @IsOptional()
   address?: string;
 }

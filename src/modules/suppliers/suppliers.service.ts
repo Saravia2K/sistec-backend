@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
@@ -9,20 +13,14 @@ export class SuppliersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateSupplierDto) {
-    const exists = await this.prisma.user.findUnique({ where: { email: data.email } });
-    if (exists) throw new ConflictException('El correo ya está registrado');
-
-    const hashed = await bcrypt.hash(data.password, 10);
-
-    const user = await this.prisma.user.create({
-      data: {
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        password: hashed,
-        // Si tienes relación user -> supplier puedes agregarla aquí
-      },
+    const exists = await this.prisma.user.findUnique({
+      where: { email: data.email },
     });
+    const existsInSupplier = await this.prisma.supplier.findUnique({
+      where: { email: data.email },
+    });
+    if (exists || existsInSupplier)
+      throw new ConflictException('El correo ya está registrado');
 
     const supplier = await this.prisma.supplier.create({
       data: {
@@ -33,11 +31,13 @@ export class SuppliersService {
       },
     });
 
-    return { message: 'Proveedor y usuario creados', user, supplier };
+    return { message: 'Proveedor y usuario creados', supplier };
   }
 
   async findAll() {
-    return this.prisma.supplier.findMany();
+    return this.prisma.supplier.findMany({
+      orderBy: { id: 'asc' },
+    });
   }
 
   async findOne(id: number) {
@@ -57,7 +57,9 @@ export class SuppliersService {
     };
 
     if (data.password) {
-      const user = await this.prisma.user.findUnique({ where: { email: supplier.email } });
+      const user = await this.prisma.user.findUnique({
+        where: { email: supplier.email },
+      });
       if (user) {
         await this.prisma.user.update({
           where: { id: user.id },
@@ -87,7 +89,9 @@ export class SuppliersService {
     await this.prisma.supplier.delete({ where: { id } });
 
     // Eliminar usuario con el mismo email
-    const user = await this.prisma.user.findUnique({ where: { email: supplier.email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email: supplier.email },
+    });
     if (user) await this.prisma.user.delete({ where: { id: user.id } });
 
     return { message: 'Proveedor y usuario eliminados correctamente' };
