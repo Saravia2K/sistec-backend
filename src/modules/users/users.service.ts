@@ -29,6 +29,7 @@ export class UsersService {
 
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
+      updateData.firstLogin = false;
     }
 
     return this.prisma.user.update({
