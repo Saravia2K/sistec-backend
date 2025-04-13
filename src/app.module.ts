@@ -11,6 +11,8 @@ import { TechniciansModule } from './modules/technicians/technicians.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { ComponentsModule } from './modules/components/components.module';
+import { PurchasesModule } from './modules/purchases/purchases.module';
+import { SupportedDevicesModule } from './modules/supported-devices/supported-devices.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ComponentsModule } from './modules/components/components.module';
     SuppliersModule,
     TicketsModule,
     ComponentsModule,
+    PurchasesModule,
+    SupportedDevicesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
