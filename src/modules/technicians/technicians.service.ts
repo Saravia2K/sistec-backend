@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { CreateTechnicianDto } from './dto/create-technician.dto';
 import { UpdateTechnicianDto } from './dto/update-technician.dto';
@@ -9,7 +13,9 @@ export class TechniciansService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateTechnicianDto) {
-    const exists = await this.prisma.user.findUnique({ where: { email: data.email } });
+    const exists = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
     if (exists) throw new ConflictException('El correo ya está registrado');
 
     const hashed = await bcrypt.hash(data.password, 10);
@@ -38,9 +44,23 @@ export class TechniciansService {
     const users = await this.prisma.user.findMany({
       where: { technician: { isNot: null } },
       include: { technician: true },
+      orderBy: {
+        id: 'asc',
+      },
     });
 
-    return users.map(({ password, ...rest }) => rest);
+    return users.map(({ password, ...rest }) => {
+      const { technician, id: idUser, ...user } = rest;
+      const { id, active, specialty } = technician;
+
+      return {
+        id,
+        idUser,
+        ...user,
+        active,
+        specialty,
+      };
+    });
   }
 
   async findOne(id: number) {
@@ -49,7 +69,8 @@ export class TechniciansService {
       include: { technician: true },
     });
 
-    if (!user || !user.technician) throw new NotFoundException('Técnico no encontrado');
+    if (!user || !user.technician)
+      throw new NotFoundException('Técnico no encontrado');
 
     const { password, ...result } = user;
     return result;
@@ -61,7 +82,8 @@ export class TechniciansService {
       include: { technician: true },
     });
 
-    if (!user || !user.technician) throw new NotFoundException('Técnico no encontrado');
+    if (!user || !user.technician)
+      throw new NotFoundException('Técnico no encontrado');
 
     const updateData: any = {
       name: data.name,
@@ -77,6 +99,7 @@ export class TechniciansService {
       where: { id },
       data: {
         ...updateData,
+        firstLogin: !!data.password,
         technician: {
           update: {
             specialty: data.specialty,
@@ -97,7 +120,8 @@ export class TechniciansService {
       include: { technician: true },
     });
 
-    if (!user || !user.technician) throw new NotFoundException('Técnico no encontrado');
+    if (!user || !user.technician)
+      throw new NotFoundException('Técnico no encontrado');
 
     await this.prisma.technician.delete({ where: { userId: id } });
     await this.prisma.user.delete({ where: { id } });
