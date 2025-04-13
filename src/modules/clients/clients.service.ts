@@ -80,12 +80,26 @@ export class ClientsService {
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany ({
-        where: {customer: { isNot: null }},
-        include: { customer: true },
-    })
+    const users = await this.prisma.user.findMany({
+      where: { customer: { isNot: null } },
+      include: { customer: true },
+      orderBy: {
+        id: 'asc',
+      },
+    });
 
-    return users.map(({password, ...rest}) => rest);
+    return users.map(({ password, ...rest }) => {
+      const { customer, id: idUser, ...user } = rest;
+      const { id, address, registrationDate } = customer;
+
+      return {
+        id,
+        ...user,
+        idUser,
+        address,
+        registrationDate,
+      };
+    });
   }
 
   async remove(id: number) {
@@ -108,5 +122,4 @@ export class ClientsService {
 
     return { message: 'Cliente eliminado correctamente' };
   }
-
 }
