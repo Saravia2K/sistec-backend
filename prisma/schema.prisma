@@ -72,6 +72,8 @@ model ComponentStock {
   unitPrice    Float
   inUse        Boolean
   usedIn       UsedComponent[]
+
+  @@unique([componentId, supplierId, unitPrice], name: "stock_combo")
 }
 
 model SupportedDevices {

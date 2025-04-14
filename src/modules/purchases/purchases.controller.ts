@@ -6,6 +6,8 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PurchasesService } from './purchases.service';
 import {
@@ -19,6 +21,7 @@ import {
 import { PurchaseResponseDto } from './dto/purchase-response.dto';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
+import { UpdatePurchaseStatusDto } from './dto/update-purchase-status.dto';
 
 @ApiTags('Purchases')
 @ApiBearerAuth()
@@ -63,21 +66,20 @@ export class PurchasesController {
     return this.purchasesService.findOne(+id);
   }
 
-  @Put(':id')
-  @ApiOperation({ summary: 'Actualizar una compra' })
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Actualizar el estado de una compra' })
   @ApiParam({ name: 'id', example: 1, description: 'ID de la compra' })
   @ApiResponse({
     status: 200,
-    description: 'Compra actualizada',
+    description: 'Estado de la compra actualizado',
     type: PurchaseResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Compra no encontrada' })
-  @ApiBody({ type: UpdatePurchaseDto })
-  update(
-    @Param('id') id: string,
-    @Body() updatePurchaseDto: UpdatePurchaseDto,
+  async updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePurchaseStatusDto,
   ) {
-    return this.purchasesService.update(+id, updatePurchaseDto);
+    return this.purchasesService.updatePurchaseStatus(id, dto.status);
   }
 
   @Delete(':id')
