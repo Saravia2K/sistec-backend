@@ -13,6 +13,7 @@ import { TicketsModule } from './modules/tickets/tickets.module';
 import { ComponentsModule } from './modules/components/components.module';
 import { PurchasesModule } from './modules/purchases/purchases.module';
 import { SupportedDevicesModule } from './modules/supported-devices/supported-devices.module';
+import { RepairsModule } from './modules/repairs/repairs.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SupportedDevicesModule } from './modules/supported-devices/supported-de
     ComponentsModule,
     PurchasesModule,
     SupportedDevicesModule,
+    RepairsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
