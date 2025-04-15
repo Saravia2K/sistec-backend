@@ -52,7 +52,7 @@ export class PurchasesService {
       purchases.map(async (p) => {
         const componentsUsed = await this.prisma.usedComponent.findFirst({
           where: {
-            ComponentStock: {
+            componentStock: {
               componentId: p.component.id,
               supplierId: p.supplier.id,
               unitPrice: p.unitPrice,

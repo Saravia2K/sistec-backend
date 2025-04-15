@@ -11,7 +11,13 @@ import {
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('Tickets')
 @Controller('tickets')
@@ -37,9 +43,15 @@ export class TicketsController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar ticket por ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTicketDto) {
-    return this.ticketsService.update(id, body);
+  @ApiOperation({ summary: 'Actualizar información de un ticket' })
+  @ApiParam({ name: 'id', example: 1, description: 'ID del ticket' })
+  @ApiResponse({ status: 404, description: 'Ticket o técnico no encontrado' })
+  @ApiBody({ type: UpdateTicketDto })
+  async updateTicket(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTicketDto: UpdateTicketDto,
+  ) {
+    return this.ticketsService.updateTicket(id, updateTicketDto);
   }
 
   @Delete(':id')

@@ -105,7 +105,7 @@ model Repair {
   id              Int             @id @default(autoincrement())
   supportTicketId Int             @unique
   supportTicket   SupportTicket   @relation(fields: [supportTicketId], references: [id])
-  diagnosis       String
+  diagnosis       String?
   startDate       DateTime
   appliedSolution String?
   endDate         DateTime?
@@ -133,7 +133,7 @@ model UsedComponent {
   repair           Repair         @relation(fields: [repairId], references: [id])
   quantity         Int            @default(1)
   componentStockId Int
-  ComponentStock   ComponentStock @relation(fields: [componentStockId], references: [id])
+  componentStock   ComponentStock @relation(fields: [componentStockId], references: [id])
 }
 
 enum TechnicianSpecialty {

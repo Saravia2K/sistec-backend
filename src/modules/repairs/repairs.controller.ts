@@ -37,10 +37,19 @@ export class RepairsController {
     return this.service.findOne(id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar reparación' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateRepairDto) {
-    return this.service.update(id, body);
+  @Patch(':supportTicketId')
+  @ApiOperation({ summary: 'Actualizar información de reparación' })
+  async updateRepair(
+    @Param('supportTicketId', ParseIntPipe) supportTicketId: number,
+    @Body() updateRepairDto: UpdateRepairDto,
+  ) {
+    return this.service.updateRepair(supportTicketId, {
+      diagnosis: updateRepairDto.diagnosis,
+      appliedSolution: updateRepairDto.appliedSolution,
+      estimatedCost: updateRepairDto.estimatedCost,
+      endDate: updateRepairDto.endDate,
+      usedComponents: updateRepairDto.usedComponents,
+    });
   }
 
   @Delete(':id')
