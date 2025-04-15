@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { CreateRepairDto } from './dto/create-repair.dto';
-import { UpdateRepairDto } from './dto/update-repair.dto';
 
 @Injectable()
 export class RepairsService {
