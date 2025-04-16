@@ -57,7 +57,7 @@ model Component {
   name        String           @unique
   description String?
   visible     Boolean          @default(true)
-  components  ComponentStock[]
+  stocks      ComponentStock[]
   purchases   Purchase[]
 }
 
