@@ -21,6 +21,9 @@
     "start:db": "docker compose up --force-recreate -d",
     "postinstall": "prisma generate"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "~4.0.2",
