@@ -15,6 +15,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module';
 import { SupportedDevicesModule } from './modules/supported-devices/supported-devices.module';
 import { RepairsModule } from './modules/repairs/repairs.module';
 import { ComponentStockModule } from './modules/component-stock/component-stock.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ComponentStockModule } from './modules/component-stock/component-stock.
     SupportedDevicesModule,
     RepairsModule,
     ComponentStockModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
