@@ -295,8 +295,8 @@ async function main() {
         componentId: component.id,
         quantity,
         unitPrice,
-        purchaseDate: new Date(2023, 0, idx + 1), // Fechas diferentes para cada compra
-        deliveryDate: new Date(2023, 0, idx + 3),
+        purchaseDate: new Date(2025, 0, idx + 1), // Fechas diferentes para cada compra
+        deliveryDate: new Date(2025, 0, idx + 3),
         status: 'completed',
       });
     });
@@ -336,8 +336,8 @@ async function main() {
   const devices = await prisma.supportedDevices.findMany();
   const componentStocks = await prisma.componentStock.findMany();
 
-  const startDate = new Date(2023, 0, 1); // 1 de enero
-  const endDate = new Date(2023, 3, 11); // 11 de abril
+  const startDate = new Date(2025, 0, 1); // 1 de enero
+  const endDate = new Date(2025, 3, 11); // 11 de abril
   const ticketsData: Prisma.SupportTicketCreateManyInput[] = [];
   const repairsData: Prisma.RepairCreateManyInput[] = [];
   const usedComponentsData: Prisma.UsedComponentCreateManyInput[] = [];
@@ -352,7 +352,7 @@ async function main() {
 
     // Crear 3 tickets por día laboral
     for (let i = 0; i < 3; i++) {
-      const isCompleted = date < new Date(2023, 3, 4); // Completados hasta 4 de abril
+      const isCompleted = date < new Date(2025, 3, 4); // Completados hasta 4 de abril
       const status = isCompleted
         ? TicketStatus.completed
         : Math.random() > 0.7
