@@ -63,6 +63,15 @@ export class ComponentController {
     return this.componentService.findOne(+id);
   }
 
+  @Get(':id/stocks')
+  @ApiOperation({
+    summary: 'Obtiene los stocks de un componente',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de stocks del componente' })
+  async getComponentPriceComparison(@Param('id') id: string) {
+    return this.componentService.getStocks(id);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un componente' })
   @ApiParam({ name: 'id', description: 'ID del componente', example: 1 })

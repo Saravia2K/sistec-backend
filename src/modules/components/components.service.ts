@@ -44,4 +44,36 @@ export class ComponentService {
       data: { visible: false },
     });
   }
+
+  async getStocks(componentId: string) {
+    const component = await this.prisma.component.findFirstOrThrow({
+      where: {
+        id: +componentId,
+      },
+      select: {
+        id: true,
+        name: true,
+        stocks: {
+          where: {
+            inUse: true,
+          },
+          select: {
+            id: true,
+            supplier: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            unitPrice: true,
+          },
+          orderBy: {
+            unitPrice: 'asc',
+          },
+        },
+      },
+    });
+
+    return component;
+  }
 }
