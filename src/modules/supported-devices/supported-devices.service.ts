@@ -14,7 +14,11 @@ export class SupportedDevicesService {
   }
 
   async findAll() {
-    return this.prisma.supportedDevices.findMany();
+    return this.prisma.supportedDevices.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
   async findOne(id: number) {

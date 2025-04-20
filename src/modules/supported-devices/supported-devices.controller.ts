@@ -4,8 +4,8 @@ import {
   Post,
   Body,
   Param,
-  Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { SupportedDevicesService } from './supported-devices.service';
 import {
@@ -65,7 +65,7 @@ export class SupportedDevicesController {
     return this.supportedDevicesService.findOne(+id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un dispositivo' })
   @ApiParam({ name: 'id', example: 1, description: 'ID del dispositivo' })
   @ApiResponse({
