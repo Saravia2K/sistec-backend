@@ -43,13 +43,7 @@ export class RepairsController {
     @Param('supportTicketId', ParseIntPipe) supportTicketId: number,
     @Body() updateRepairDto: UpdateRepairDto,
   ) {
-    return this.service.updateRepair(supportTicketId, {
-      diagnosis: updateRepairDto.diagnosis,
-      appliedSolution: updateRepairDto.appliedSolution,
-      estimatedCost: updateRepairDto.estimatedCost,
-      endDate: updateRepairDto.endDate,
-      usedComponents: updateRepairDto.usedComponents,
-    });
+    return this.service.updateRepair(supportTicketId, updateRepairDto);
   }
 
   @Delete(':id')
