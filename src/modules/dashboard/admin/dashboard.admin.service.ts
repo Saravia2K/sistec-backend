@@ -14,7 +14,7 @@ export class DashboardAdminService {
       lowStockComponents,
       commonFailures,
       avgRepairTimes,
-      highPriorityTickets
+      highPriorityTickets,
     ] = await Promise.all([
       this.totalTickets(),
       this.statusCounts(),
@@ -23,7 +23,7 @@ export class DashboardAdminService {
       this.lowStockComponents(),
       this.commonFailures(),
       this.getAverageRepairTimes(),
-      this.highPriorityTickets()
+      this.highPriorityTickets(),
     ]);
 
     return {
@@ -31,12 +31,12 @@ export class DashboardAdminService {
       byStatus: {
         pending,
         inProgress,
-        completed
+        completed,
       },
       lowStockComponents,
       commonFailures,
       avgRepairTimes,
-      highPriorityTickets
+      highPriorityTickets,
     };
   }
 
@@ -44,29 +44,26 @@ export class DashboardAdminService {
     return this.prisma.supportTicket.count();
   }
 
-  async statusCounts(status: 'pending' | 'in_progress' | 'completed' = 'pending') {
+  async statusCounts(
+    status: 'pending' | 'in_progress' | 'completed' = 'pending',
+  ) {
     return this.prisma.supportTicket.count({ where: { status } });
   }
 
   async lowStockComponents() {
-    const results = await this.prisma.componentStock.findMany({
-      where: {
-        stock: {
-          lte: 5,
-        },
-      },
-      select: {
-        id: true,
-        component: { select: { name: true } },
-        stock: true,
-      },
-    });
-
-    return results.map(cs => ({
-      id: cs.id,
-      name: cs.component.name,
-      stock: cs.stock,
-    }));
+    return this.prisma.$queryRaw`
+      SELECT
+        CS.ID,
+        C."name" AS component,
+        S."name" AS supplier,
+        CS.STOCK,
+        CS."minimumStock",
+        CS."unitPrice"
+      FROM "ComponentStock" CS
+      JOIN "Component" C ON cs."componentId" = c.ID
+      JOIN "Supplier" S ON cs."supplierId" = s.ID
+      WHERE cs.STOCK < cs."minimumStock"
+    `;
   }
 
   async commonFailures() {
@@ -76,7 +73,7 @@ export class DashboardAdminService {
 
     const failureMap = {};
 
-    tickets.forEach(t => {
+    tickets.forEach((t) => {
       const key = t.problemDescription.trim();
       if (key) failureMap[key] = (failureMap[key] || 0) + 1;
     });
@@ -92,10 +89,12 @@ export class DashboardAdminService {
 
     const repairMap = {};
 
-    repairs.forEach(r => {
+    repairs.forEach((r) => {
       const start = new Date(r.startDate);
       const end = new Date(r.endDate);
-      const diff = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      const diff = Math.round(
+        (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+      );
       repairMap[`${diff} días`] = (repairMap[`${diff} días`] || 0) + 1;
     });
 
