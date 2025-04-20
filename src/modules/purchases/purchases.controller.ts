@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Param,
-  Put,
   Delete,
   Patch,
   ParseIntPipe,
@@ -20,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { PurchaseResponseDto } from './dto/purchase-response.dto';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
-import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { UpdatePurchaseStatusDto } from './dto/update-purchase-status.dto';
 
 @ApiTags('Purchases')
