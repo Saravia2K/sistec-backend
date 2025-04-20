@@ -13,12 +13,14 @@ export class ComponentStockService {
 
   async findAll() {
     return this.prisma.componentStock.findMany({
-      where: {
-        inUse: true,
-      },
       include: {
         component: true,
         supplier: true,
+      },
+      orderBy: {
+        component: {
+          name: 'asc',
+        },
       },
     });
   }
