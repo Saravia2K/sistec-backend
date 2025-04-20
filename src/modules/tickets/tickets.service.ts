@@ -23,6 +23,9 @@ export class TicketsService {
         assignedTechnician: { include: { user: { select: { name: true } } } },
         deviceType: true,
       },
+      orderBy: {
+        requestDate: 'desc',
+      },
     });
   }
 

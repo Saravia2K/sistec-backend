@@ -14,7 +14,11 @@ export class ComponentService {
   }
 
   async findAll() {
-    return this.prisma.component.findMany();
+    return this.prisma.component.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
   async findOne(id: number) {
